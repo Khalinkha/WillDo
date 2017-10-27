@@ -1,0 +1,54 @@
+﻿<div id="surveyContainer"></div>
+<div id="surveyResult"></div>
+
+<script type="text/javascript">
+    Survey.Survey.cssType = "bootstrap";
+    Survey.defaultBootstrapCss.navigationButton = "btn btn-green";
+    Survey.defaultBootstrapMaterialCss.navigationButton = "btn btn-green";
+    Survey.defaultBootstrapMaterialCss.rating.item = "btn btn-default my-rating";
+
+    var surveyJSON = { surveyId: 'fb1f2a58-9bd7-4ff5-b051-023d983f638f' }
+    var survey = new Survey.Model(surveyJSON);
+
+    function sendDataToServer(survey) {
+        survey.sendResult('92c32e80-63bc-4aa5-811c-0e51822ea020');
+        SaveSelection();
+    }
+
+    $("#surveyContainer").Survey({
+        model: survey,
+        onComplete: sendDataToServer,
+        //completeText: "Indsend",
+        ////completedHtml: "Tak fordi du udfyldte svarskemaet!!!",
+        //loadingHtml: "Indlæser svarskema, vent venligst $$$",
+        //locale: "da",
+        //pageNextText: "Næste",
+        //pagePrevText: "Forrige",
+    });
+
+    function SaveSelection() {
+        var surveyResult = { "surveyResult": JSON.stringify(survey.data) };
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("SaveSelection", "Survey")',
+            dataType: 'json',
+            data: surveyResult,
+            success: function (result) {
+                showAlert(result, "Tak fordi du udfyldte svarskemaet ...", "alert-success");
+            },
+            error: function (ex) {
+                showAlert(ex, "alert-danger");
+            }
+        });
+    }
+
+    function showAlert(path, message, alerttype) {
+        $('#surveyResult').append('<div id="alertdiv" class="alert ' + alerttype + '" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="alert-heading">' + message + '</h4><p class="lead"><a class="btn btn-success" href=' + path + ' role="button">Åben dokument</a></p></div>');
+
+        @*setTimeout(function () {
+            $("#alertdiv").remove();
+            location.href = '@Url.Action("Index", "Survey")';
+        }, 3500);*@
+    }
+</script>
