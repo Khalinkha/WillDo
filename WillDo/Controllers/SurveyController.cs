@@ -95,7 +95,6 @@ namespace WillDo.Controllers
 
         private static void InsertBookmark(DocX doc, string bookMark)
         {
-            // Insert a new "bookMark" in the document.
             doc.InsertBookmark(bookMark);
         }
     }
